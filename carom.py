@@ -1,6 +1,7 @@
 import pygame
 import math
 import sys
+import random
 
 # Initialize pygame
 pygame.init()
@@ -16,6 +17,7 @@ BLACK = (0, 0, 0)
 BROWN = (139, 69, 19)
 RED = (255, 0, 0)
 BLUE = (50, 50, 255)
+GREY = (200, 200, 200)
 
 # Clock
 clock = pygame.time.Clock()
@@ -44,6 +46,31 @@ pockets = [
     (WIDTH - BOARD_MARGIN, HEIGHT - BOARD_MARGIN),
 ]
 
+# Coin setup
+coin_radius = 10
+coins = []
+
+center_x, center_y = WIDTH // 2, HEIGHT // 2
+
+# Add red queen in center
+coins.append({'pos': [center_x, center_y], 'color': RED})
+
+# Place coins in circular pattern (black and white coins)
+def place_ring(radius, num_coins, colors):
+    angle_step = 360 / num_coins
+    for i in range(num_coins):
+        angle = math.radians(i * angle_step)
+        x = center_x + radius * math.cos(angle)
+        y = center_y + radius * math.sin(angle)
+        color = colors[i % len(colors)]
+        coins.append({'pos': [x, y], 'color': color})
+
+# 12 coins in inner ring (6 white, 6 black)
+place_ring(25, 12, [WHITE, BLACK])
+
+# 6 coins in outer ring (3 white, 3 black)
+place_ring(50, 6, [WHITE, BLACK])
+
 # Draw board
 def draw_board():
     screen.fill(BROWN)
@@ -54,6 +81,11 @@ def draw_board():
 # Draw striker
 def draw_striker():
     pygame.draw.circle(screen, striker_color, (int(striker_pos[0]), int(striker_pos[1])), striker_radius)
+
+# Draw coins
+def draw_coins():
+    for coin in coins:
+        pygame.draw.circle(screen, coin['color'], (int(coin['pos'][0]), int(coin['pos'][1])), coin_radius)
 
 # Bounce off wall
 def check_wall_collision():
@@ -83,6 +115,7 @@ while running:
     screen.fill((0, 0, 0))
     draw_board()
     draw_striker()
+    draw_coins()
 
     # Update striker position
     striker_pos[0] += striker_velocity[0]
