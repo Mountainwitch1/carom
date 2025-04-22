@@ -35,7 +35,7 @@ striker_velocity = [0, 0]
 dragging = False
 mouse_start = (0, 0)
 
-# Pockets (for now, just circles)
+# Pockets
 pocket_radius = 20
 pockets = [
     (BOARD_MARGIN, BOARD_MARGIN),
@@ -55,6 +55,27 @@ def draw_board():
 def draw_striker():
     pygame.draw.circle(screen, striker_color, (int(striker_pos[0]), int(striker_pos[1])), striker_radius)
 
+# Bounce off wall
+def check_wall_collision():
+    left = BOARD_MARGIN + striker_radius
+    right = WIDTH - BOARD_MARGIN - striker_radius
+    top = BOARD_MARGIN + striker_radius
+    bottom = HEIGHT - BOARD_MARGIN - striker_radius
+
+    if striker_pos[0] < left:
+        striker_pos[0] = left
+        striker_velocity[0] *= -1
+    elif striker_pos[0] > right:
+        striker_pos[0] = right
+        striker_velocity[0] *= -1
+
+    if striker_pos[1] < top:
+        striker_pos[1] = top
+        striker_velocity[1] *= -1
+    elif striker_pos[1] > bottom:
+        striker_pos[1] = bottom
+        striker_velocity[1] *= -1
+
 # Game loop
 running = True
 while running:
@@ -70,6 +91,9 @@ while running:
     # Apply friction
     striker_velocity[0] *= 0.98
     striker_velocity[1] *= 0.98
+
+    # Wall collision
+    check_wall_collision()
 
     # Stop movement if very slow
     if abs(striker_velocity[0]) < 0.1 and abs(striker_velocity[1]) < 0.1:
